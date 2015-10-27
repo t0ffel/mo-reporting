@@ -1,0 +1,147 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<!--[if IE 9]><html class="ie9"><![endif]-->
+<!--[if gt IE 9]><!-->
+<html>
+<!--<![endif]-->
+<head>
+  <title>Dashboard - PatternFly</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="../dist/img/favicon.ico">
+  <!-- iPad retina icon -->
+  <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../dist/img/apple-touch-icon-precomposed-152.png">
+  <!-- iPad retina icon (iOS < 7) -->
+  <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../dist/img/apple-touch-icon-precomposed-144.png">
+  <!-- iPad non-retina icon -->
+  <link rel="apple-touch-icon-precomposed" sizes="76x76" href="../dist/img/apple-touch-icon-precomposed-76.png">
+  <!-- iPad non-retina icon (iOS < 7) -->
+  <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../dist/img/apple-touch-icon-precomposed-72.png">
+  <!-- iPhone 6 Plus icon -->
+  <link rel="apple-touch-icon-precomposed" sizes="120x120" href="../dist/img/apple-touch-icon-precomposed-180.png">
+  <!-- iPhone retina icon (iOS < 7) -->
+  <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../dist/img/apple-touch-icon-precomposed-114.png">
+  <!-- iPhone non-retina icon (iOS < 7) -->
+  <link rel="apple-touch-icon-precomposed" sizes="57x57" href="../dist/img/apple-touch-icon-precomposed-57.png">
+  <link href="{% static 'css/patternfly.css' %}" rel="stylesheet" media="screen, print">
+  <link href="{% static 'css/patternfly-additions.min.css' %}" rel="stylesheet" media="screen, print">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha256-Sk3nkD6mLTMOF0EOpNtsIry+s1CsaqQC1rVLTAy+0yc= sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+
+  <script src="{% static 'c3/c3.min.js' %}"></script>
+  <script src="{% static 'd3/d3.min.js' %}"></script>
+
+  <script src="{% static 'js/patternfly.min.js' %}"></script>
+</head>
+<body>
+  <nav class="navbar navbar-default navbar-pf" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" ng-click="navbarCollapsed = !navbarCollapsed">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">Systems Design and Engineering</a>
+    </div>
+
+    <div class="collapse navbar-collapse navbar-collapse-1">
+      <ul class="nav navbar-nav navbar-utility">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <span class="pficon pficon-user"></span> Trello <b class="caret"></b>
+          </a>
+          <ul class="dropdown-menu">
+            <li ng-hide='authorized'>
+              <button ng-click='authorize()' class='btn btn-link'>authorize</button>
+            </li>
+            <li ng-show='authorized'> {{ full_name }} </li>
+            <li ng-show='authorized' class="divider"></li>
+            <li ng-show='authorized'>
+              <button class='btn btn-link' ng-click='deauthorize()'>deauthorize</button>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-8 col-md-9">
+        <div class="page-header page-header-bleed-right">
+          <div class="actions pull-right">
+            <a ng-click='refresh()'><span class="pficon pficon-refresh"></span> Refresh Results</a>
+          </div>
+          <h1><a href="https://trello.com/b/WZ2gjtnR/systems-engineering-projects-and-status">current assignments (WIP)</a></h1>
+        </div>
+
+        <div class="row">
+          <span>total cards: {{ num_cards_total }}</span>
+          <span>ok: {{ num_cards_ok }}</span>
+          <span>issues: {{ num_cards_issues }}</span>
+          <span>blocked: {{ num_cards_blocked }}</span>
+          <div class="col-sm-4">
+            <div id="syseng_cards_chart" pf-c3-chart config="syseng_cards_chart_config"></div>
+          </div>
+          <div class="col-sm-4">
+            <div id="projectgroup_chart" pf-c3-chart config="projectgroup_chart_config"></div>
+          </div>
+          <div class="col-sm-4">
+            <div id="product_chart"></div>
+          </div>
+        </div><!-- charts row -->
+
+        <hr/>
+        <div class="container-fluid">
+          <!-- https://scotch.io/tutorials/sort-and-filter-a-table-using-angular -->
+          <div class="col-md-12" ng-show='authorized'>
+            <form>
+              <div class="form-group">
+                <div class="input-group">
+                  <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                  <input type="text" class="form-control" placeholder="enter filter keyword" ng-model="cardTitle">
+                </div>
+              </div>
+            </form>
+            <table id="cardDataTable" class="table table-bordered table-striped">
+              <thead>
+                <tr>
+                  <td>Project</td>
+                </tr>
+              </thead>
+              <tbody>
+                {% for assignment in all_unrelated_assignments %}
+                <tr>
+                  <td>{{ assignment.project }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <hr/>
+      </div><!-- /col -->
+      <div class="col-sm-4 col-md-3 sidebar-pf sidebar-pf-right">
+        <div class="sidebar-header sidebar-header-bleed-left sidebar-header-bleed-right">
+          <div class="actions pull-right">
+            <p style="display: none">fülltext</p>
+          </div>
+          <h2 class="h5">Some Documentation</h2>
+        </div>
+        <p style="display: none">fülltext</p>
+      </div><!-- /col -->
+    </div><!-- /row -->
+
+  </div>
+
+  <footer class="footer">
+    <div class="container-fluid">
+      <p class="text-muted">This is Systems Engineering.<!-- and my name is {{ mynameis }} --></p>
+    </div>
+  </footer>
+
+</body>
+</html>
