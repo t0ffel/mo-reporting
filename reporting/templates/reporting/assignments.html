@@ -85,7 +85,7 @@
           <div class="actions pull-right">
             <a ng-click='refresh()'><span class="pficon pficon-refresh"></span> Refresh Results</a>
           </div>
-          <h1>Assignments unrelated to a Project</h1>
+          <h1>Assignments for Project FIXME</h1>
         </div>
 
         <div class="container-fluid">
@@ -107,7 +107,7 @@
                   <td>Card</td>
                 </tr>
               </thead>
-              <tbody>{% for aid, assignment in all_unrelated_assignments.items %}
+              <tbody>{% for aid, assignment in assignments.items %}
                 <tr>
                   <td>{{ aid }}</td>
                   <td>{{ assignment.title }}</td>

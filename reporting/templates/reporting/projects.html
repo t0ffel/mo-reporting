@@ -85,7 +85,7 @@
           <div class="actions pull-right">
             <a ng-click='refresh()'><span class="pficon pficon-refresh"></span> Refresh Results</a>
           </div>
-          <h1>Assignments unrelated to a Project</h1>
+          <h1>All Projects</h1>
         </div>
 
         <div class="container-fluid">
@@ -102,16 +102,16 @@
             <table id="cardDataTable" class="table table-bordered table-striped">
               <thead>
                 <tr>
-                  <td>ID</td>
-                  <td>Title</td>
                   <td>Card</td>
+                  <td>Name</td>
+                  <td>Team</td>
                 </tr>
               </thead>
-              <tbody>{% for aid, assignment in all_unrelated_assignments.items %}
+              <tbody>{% for pid, project in all_projects.items %}
                 <tr>
-                  <td>{{ aid }}</td>
-                  <td>{{ assignment.title }}</td>
-                  <td><a href="https://trello.com/c/{{ aid }}">https://trello.com/c/{{ aid }}</a></td>
+                  <td><a href="https://trello.com/c/{{ pid }}">{{ pid }}</a></td>
+                  <td><a href="/reporting/assignments/{{ pid }}">{{ project.name }}</a></td>
+                  <td>{{ project.team }}</td>
                 </tr>{% endfor %}
               </tbody>
             </table>

@@ -35,10 +35,21 @@ class TrelloWarehouse(object):
             if list.name == 'In Progress'.encode('utf-8'):
                 self.sysdeseng_projects_cards = self.sysdeseng_projects.get_list(list.id).list_cards()
 
-        self.projects = []
+        self.projects = dict()
         self.assignments = dict()
 
+    def _get_title(self, short_url_id):
+        return "UNKNOWN" # TODO get titel of card identified by short_url_id
+
+    def _add_project(self, project):
+        pass
+
+    def _add_assignment(self, assignment):
+        pass
+
     def get_projects(self):
+        self.projects.clear()
+
         # check if there are some SysDesEng projects at all
         if self.sysdeseng_projects_cards is not None:
             # and for each project
@@ -47,7 +58,7 @@ class TrelloWarehouse(object):
                 _project.fetch(True) # get the details from trello.com
 
                 _p = project.Project('Systems Engineering', _project.name, _project.id  )
-                self.projects.append(_p)
+                self.projects[_project.id] = _p
 
                 self.logger.debug('new project: %s' % str(_p))
 
@@ -57,10 +68,9 @@ class TrelloWarehouse(object):
                     for item in _project.checklists[0].items:
                         try: # lets try to convert it into an Assignment
                             _aid = item['name'].split('/')[4]
-                            _a = assignment.Assignment(_aid, _p)
-                            self.assignments[_aid] = _a
+                            self.assignments[_aid] = assignment.Assignment(_aid, self._get_title(item['name']), _p)
 
-                            self.logger.debug("new assignment %s" % str(_a))
+                            self.logger.debug("new assignment %s" % str(self.assignments[_aid]))
                         except IndexError: # if there is no URL in there...
                             self.logger.warning("Assignment '%s' did not link back to a trello card." % (item['name']))
                             pass
@@ -78,6 +88,7 @@ class TrelloWarehouse(object):
         """function to filter out any assignment that is not related to a project"""
 
         _assignments = []
+        result = dict()
 
         all_known_assignments = self.get_all_assignment_ids()
 
@@ -94,9 +105,23 @@ class TrelloWarehouse(object):
                 _assignments = _assignments + self.syseng_assignments.get_list(list.id).list_cards()
 
         # and get all cards aka assignments
-        for assignment in _assignments:
-            _aid = assignment.url.split('/')[4]
+        for _assignment in _assignments:
+            _aid = _assignment.url.split('/')[4]
             if _aid in all_known_assignments:
                 self.logger.info("we have had assignment '%s' within project '%s'" % (_aid, self.assignments[_aid].project))
             else:
-                self.logger.debug('unrelated assignment: %s' % str(assignment.url.split('/')[4]))
+                result[_aid] = assignment.Assignment(_aid, _assignment.name, None)
+
+                self.logger.debug('unrelated assignment: %s' % str(result[_aid]))
+
+        return result
+
+    def get_assignments(self, project_id):
+        _assignments = []
+
+        try:
+            _assignments = self.projects[project_id].assignments
+        except KeyError as e:
+            raise
+
+        return _assignments
