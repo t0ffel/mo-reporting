@@ -34,49 +34,7 @@
   <script src="{% static 'js/patternfly.min.js' %}"></script>
 </head>
 <body>
-  <nav class="navbar navbar-default navbar-pf" role="navigation">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" ng-click="navbarCollapsed = !navbarCollapsed">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">Systems Design and Engineering</a>
-    </div>
-
-    <div class="collapse navbar-collapse navbar-collapse-1">
-      <ul class="nav navbar-nav navbar-utility">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-            <span class="pficon pficon-user"></span> Trello <b class="caret"></b>
-          </a>
-          <ul class="dropdown-menu">
-            <li ng-hide='authorized'>
-              <button ng-click='authorize()' class='btn btn-link'>authorize</button>
-            </li>
-            <li ng-show='authorized'> {{ full_name }} </li>
-            <li ng-show='authorized' class="divider"></li>
-            <li ng-show='authorized'>
-              <button class='btn btn-link' ng-click='deauthorize()'>deauthorize</button>
-            </li>
-          </ul>
-        </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-primary">
-        <li>
-          <a href="/reporting/">Reporting Dashboard</a>
-        </li>
-        <li>
-          <a href="/reporting/projects">all Projects</a>
-        </li>
-        <li>
-          <a href="/reporting/unrelated">unrelated Assignments</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  {% include "reporting/navigation.html" %}
 
   <div class="container-fluid">
     <div class="row">
@@ -120,44 +78,12 @@
 
         <hr/>
       </div><!-- /col -->
-      <div class="col-sm-4 col-md-3 sidebar-pf sidebar-pf-right">
-        <div class="sidebar-header sidebar-header-bleed-left sidebar-header-bleed-right">
-          <div class="actions pull-right">
-            <p style="display: none">fülltext</p>
-          </div>
-          <h2 class="h5">Facts</h2>
-        </div>
-        <ul class="list-group">
-          <li class="list-group-item">
-            <h3 class="list-group-item-heading">The Numbers</h3>
-              <p class="list-group-item-text">total unrelated assignments: {{ total_num_unrelated_assignments }}</p>
-          </li>
-          <li class="list-group-item">
-            <h3 class="list-group-item-heading">Project</h3>
-            <p class="list-group-item-text">A project is something Systems Design and Engineering is working on to
-              archive the purpose of the project. SysDesEng may take on new projects via the <em>intake workflow</em>.
-              A Project may include many assignments to different teams.</p>
-          </li>
-          <li class="list-group-item">
-            <h3 class="list-group-item-heading">Assignment</h3>
-            <p class="list-group-item-text">An Assignment is a work item assigned to one person of a team. It belongs to
-            a project.</p>
-          </li>
-          <li class="list-group-item">
-            <h3 class="list-group-item-heading">Search</h3>
-            <p class="list-group-item-text">The search box is disable on purpose.</p>
-          </li>
-        </ul>
-      </div><!-- /col -->
-    </div><!-- /row -->
+
+      {% include "reporting/sidebar.html" %}
 
   </div>
 
-  <footer class="footer">
-    <div class="container-fluid">
-      <p class="text-muted">This is Systems Engineering.<!-- and my name is {{ mynameis }} --></p>
-    </div>
-  </footer>
+  {% include "reporting/footer.html" %}
 
 </body>
 </html>
