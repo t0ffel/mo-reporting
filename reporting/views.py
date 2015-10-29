@@ -4,7 +4,7 @@ import logging
 
 from django.shortcuts import render
 
-from TrelloWarehouse import trello_warehouse, assignment
+from reporting.TrelloWarehouse import trello_warehouse, assignment
 
 
 logger = logging.getLogger(__name__)
@@ -18,9 +18,6 @@ def index(request):
 
 def get_unrelated_assignments(request):
     unrelated_assignments = warehouse.get_unrelated_assignments()
-
-    for aid, assignment in unrelated_assignments.iteritems():
-        print aid, ' is ', str(assignment)
 
     unrelated_assignments_len = 0
 
