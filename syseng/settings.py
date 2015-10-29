@@ -15,12 +15,13 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'x@kw#805z-9f^%t3s_vds16jy@94m(5))o=n4+db3*qerk)86%'
+SECRET_KEY = os.getenv(
+    'DJANGO_SECRET_KEY',
+    'x@kw#805z-9f^%t3s_vds16jy@94m(5))o=n4+db3*qerk)86%'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -119,7 +120,11 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+        },
+        'sysengreporting': {
+            'handlers': ['console'],
+            'level': 'DEBUG'
         },
     },
 }

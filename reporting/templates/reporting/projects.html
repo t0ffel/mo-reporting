@@ -110,7 +110,7 @@
               <tbody>{% for pid, project in all_projects.items %}
                 <tr>
                   <td><a href="https://trello.com/c/{{ pid }}">{{ pid }}</a></td>
-                  <td><a href="/reporting/assignments/{{ pid }}">{{ project.name }}</a></td>
+                  <td><a href="/reporting/projects/{{ pid }}">{{ project.name }}</a></td>
                   <td>{{ project.team }}</td>
                 </tr>{% endfor %}
               </tbody>

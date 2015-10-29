@@ -12,10 +12,10 @@ class TrelloWarehouse(object):
 
     def __init__(self):
         self.logger = logging.getLogger("sysengreporting")
-        self.client = TrelloClient(api_key='e5138b5715c50cc6b98b9d52e730c54d',
-                                   api_secret='ca2dfff79d8a62ccdd86fbe9c4c004bd8f6d6a9345e40fce0e5af03d66209918',
-                                   token='103e730b9ab62042110ca96d63dc4559ccf5d7c305297790e18651b35b3771f2',
-                                   token_secret='31a508c4f0f78a7147d1dee29e652616')
+        self.client = TrelloClient(api_key = os.environ['TRELLO_API_KEY'],
+                                   api_secret = os.environ['TRELLO_API_SECRET'],
+                                   token = os.environ['TRELLO_TOKEN'],
+                                   token_secret = os.environ['TRELLO_TOKEN_SECRET'])
 
         for board in self.client.list_boards():
             if board.name == 'Systems Engineering Assignments'.encode('utf-8'):

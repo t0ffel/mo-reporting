@@ -44,8 +44,12 @@ def get_current_projects(request):
     return render(request, 'reporting/projects.html', context)
 
 def get_assignments(request, project_id):
+    a = warehouse.get_assignments(project_id)
+
+    print(a)
+
     context = {
-        'assignments': warehouse.get_assignments(project_id)
+        'assignments': a
     }
 
     return render(request, 'reporting/assignments.html', context)
