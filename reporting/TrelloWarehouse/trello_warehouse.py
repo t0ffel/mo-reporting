@@ -127,3 +127,29 @@ class TrelloWarehouse(object):
             raise
 
         return _assignments
+
+    def get_assignments0(self, team_name):
+        """Return a dict() of SysEng assignments."""
+
+        _cards = []
+        _assignments = dict()
+
+        if team_name == 'SysEng':
+            for list in self.syseng_assignments.all_lists():
+                if list.name == 'In Progress'.encode('utf-8'):
+                    _cards = self.syseng_assignments.get_list(list.id).list_cards()
+
+        for _card in _cards:
+            _label = 'default'
+
+            for label in _card.labels:
+                if label.name == b'Ok':
+                    _label = 'success'
+                if label.name == b'Issues':
+                    _label = 'warning'
+                if label.name == b'Blocked':
+                    _label = 'danger'
+
+            _assignments[_card.id] = assignment.Assignment(_card.id, _card.name, None, _status = _label)
+
+        return _assignments

@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 warehouse = trello_warehouse.TrelloWarehouse()
 
 def index(request):
-    context = { 'mynameis': 'Christoph Görn' }
+    context = { 'all_syseng_assignments':  warehouse.get_assignments0('SysEng') }
 
     return render(request, 'reporting/index.html', context)
 
