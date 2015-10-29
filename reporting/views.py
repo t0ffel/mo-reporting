@@ -12,7 +12,28 @@ logger = logging.getLogger(__name__)
 warehouse = trello_warehouse.TrelloWarehouse()
 
 def index(request):
-    context = { 'all_syseng_assignments':  warehouse.get_assignments0('SysEng') }
+    num_cards_total = 0
+    num_cards_ok = 0
+    num_cards_issues = 0
+    num_cards_blocked = 0
+    assignments = warehouse.get_assignments0('SysEng')
+
+    for idx, assignment in assignments.items():
+        num_cards_total += 1
+        if assignment.status == 'success':
+            num_cards_ok += 1
+        if assignment.status == 'warning':
+            num_cards_issues += 1
+        if assignment.status == 'danger':
+            num_cards_blocked += 1
+
+    context = {
+        'all_syseng_assignments': assignments,
+        'num_cards_total': num_cards_total,
+        'num_cards_ok': num_cards_ok,
+        'num_cards_issues': num_cards_issues,
+        'num_cards_blocked': num_cards_blocked
+    }
 
     return render(request, 'reporting/index.html', context)
 

@@ -6,7 +6,7 @@ from trello.card import *
 
 class Assignment(object):
     """The Assignment class reprsents an Assignment of a Person to a Project"""
-    def __init__(self, _id, _title, _project, _owner = '', _status = 'UNKNOWN'):
+    def __init__(self, _id, _title, _project, _owner = '', _status = 'UNKNOWN', _funding_bucket = ''):
         """
         :param _id: ID of the trello card representing this Assignment
         :param _title: Title of the trello card representing this Assignment
@@ -18,6 +18,7 @@ class Assignment(object):
         self.tags = re.findall('\[(.+?)\]', str(self.title)) # there must be no empty tag!!
         self.owner = _owner
         self.status = _status
+        self.funding_bucket = _funding_bucket
 
     def __str__(self):
         if self.project is None:

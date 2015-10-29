@@ -22,6 +22,7 @@
   <link href="{% static 'css/patternfly-additions.min.css' %}" rel="stylesheet" media="screen, print">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="{% static 'js/jquery.dataTables.js' %}"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha256-Sk3nkD6mLTMOF0EOpNtsIry+s1CsaqQC1rVLTAy+0yc= sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
@@ -43,18 +44,20 @@
         </div>
 
         <div class="row">
-          <span>total cards: {{ num_cards_total }}</span>
-          <span>ok: {{ num_cards_ok }}</span>
-          <span>issues: {{ num_cards_issues }}</span>
-          <span>blocked: {{ num_cards_blocked }}</span>
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             <div id="syseng_cards_chart" pf-c3-chart config="syseng_cards_chart_config"></div>
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             <div id="projectgroup_chart" pf-c3-chart config="projectgroup_chart_config"></div>
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             <div id="product_chart"></div>
+          </div>
+          <div class="col-sm-3">
+            <span>total cards: {{ num_cards_total }}</span>
+            <span>ok: {{ num_cards_ok }}</span>
+            <span>issues: {{ num_cards_issues }}</span>
+            <span>blocked: {{ num_cards_blocked }}</span>
           </div>
         </div><!-- charts row -->
 
@@ -62,27 +65,21 @@
         <div class="container-fluid">
           <!-- https://scotch.io/tutorials/sort-and-filter-a-table-using-angular -->
           <div class="col-md-12" ng-show='authorized'>
-            <form>
-              <div class="form-group">
-                <div class="input-group">
-                  <div class="input-group-addon"><i class="fa fa-search"></i></div>
-                  <input type="text" class="form-control" placeholder="enter filter keyword" ng-model="cardTitle">
-                </div>
-              </div>
-            </form>
-            <table id="cardDataTable" class="table table-bordered table-striped">
+            <table id="cardDataTable" class="table table-bordered table-striped datatable">
               <thead>
                 <tr>
                   <td>Status</td>
                   <td>Title</td>
                   <td>Tags</td>
+                  <td>Funding</td>
                 </tr>
               </thead>
               <tbody>{% for aid, assignment in all_syseng_assignments.items %}
                 <tr>
-                  <td><span class="label label-{{ assignment.status }}"><span class="pficon-info"></span></td>
+                  <td><span class="label label-{{ assignment.status }}"><span class="pficon-info"></span> {{ assignment.status }}</td>
                   <td><a href="https://trello.com/c/{{ aid }}">{{ assignment.title }}</a></td>
                   <td>{{ assignment.tagss }}</td>
+                  <td>{{ assignment.funding_bucket }}</td>
                 </tr>{% endfor %}
               </tbody>
             </table>
@@ -98,5 +95,11 @@
 
   {% include "reporting/footer.html" %}
 
+  <script>
+    // Initialize Datatables
+    $(document).ready(function() {
+      $('#cardDataTable').dataTable();
+    });
+  </script>
 </body>
 </html>

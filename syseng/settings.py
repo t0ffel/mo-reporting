@@ -110,6 +110,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
     os.path.join(BASE_DIR, "static/components"),
     os.path.join(BASE_DIR, "static/components/font-awesome"),
+    os.path.join(BASE_DIR, "static/components/datatables/media"),
 )
 
 LOGGING = {
