@@ -5,7 +5,7 @@ import os
 from trello import TrelloClient
 import logging
 
-import raw_report, project, assignment
+from . import raw_report, project, assignment
 
 class TrelloWarehouse(object):
     """
@@ -129,3 +129,7 @@ class TrelloWarehouse(object):
     def display_projects(self):
         """Retrun array of projects"""
         return self.raw_report.projects;
+
+    def display_granular_report(self):
+        "Return detailed report"""
+        return self.gran_report.line_items;
