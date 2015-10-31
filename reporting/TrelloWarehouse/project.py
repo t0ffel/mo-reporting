@@ -28,9 +28,13 @@ class Project(object):
         self.logger = logging.getLogger("sysengreporting")
         self._card = self.trello.get_card(self.id)
         self._card.fetch(True); #fetch all card's properties at once
+        self.logger.debug('----Project object created----')
 
     def __str__(self):
         return "Project (%s) '%s' owned by '%s'" % (self.id, self.name, self.team)
+
+    def get_name(self):
+        self.name = str(self._card.name)
 
     def add_assignment(self, assignment):
         self.assignments.append(assignment)

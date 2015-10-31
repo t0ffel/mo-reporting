@@ -40,7 +40,7 @@
           <div class="actions pull-right">
             <a ng-click='refresh()'><span class="pficon pficon-refresh"></span> Refresh Results</a>
           </div>
-          <h1>Systems Design and Engineering</h1>
+          <h1>Systems Design and Engineering Assignments</h1>
         </div>
 
         <div class="row">
@@ -54,10 +54,6 @@
             <div id="product_chart"></div>
           </div>
           <div class="col-sm-3">
-            <span>total cards: {{ num_cards_total }}</span>
-            <span>ok: {{ num_cards_ok }}</span>
-            <span>issues: {{ num_cards_issues }}</span>
-            <span>blocked: {{ num_cards_blocked }}</span>
           </div>
         </div><!-- charts row -->
 
@@ -77,11 +73,11 @@
                   <td>Last Updated</td>
                 </tr>
               </thead>
-              <tbody>{% for project in all_syseng_projects %}
+              <tbody>{% for project in all_syseng_assignments %}
                 <tr>
                   <td><span class="label label-{{ project.label }}"><span class="pficon-info"></span> {{ project.status }}</td>
                   <td><a href="https://trello.com/c/{{ project.id }}">{{ project.name }}</a></td>
-                  <td>{{ project.readable_members }} </td>
+                  <td>{{ project.member }} </td>
                   <td>{{ project.tags }}</td>
                   <td>{{ project.funding_buckets }}</td>
                   <td>{{ project.detailed_status }}</td>

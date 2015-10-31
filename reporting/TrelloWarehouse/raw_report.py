@@ -38,6 +38,7 @@ class RawReport(object):
                 self.logger.debug('Adding project: %s' % (_project.name));
                 self.logger.debug('Card id is: %s' % (_project.id));
                 self.projects.append(project.Project(_project.id, self.trello));
+                self.projects[-1].get_name();
                 self.projects[-1].get_tags();
                 self.projects[-1].get_status();
                 self.projects[-1].get_members();

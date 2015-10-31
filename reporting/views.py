@@ -16,19 +16,19 @@ def index(request):
     num_cards_ok = 0
     num_cards_issues = 0
     num_cards_blocked = 0
-    assignments = warehouse.get_assignments0('SysEng')
+    projects = warehouse.display_projects()
 
-    for idx, assignment in assignments.items():
+    for _project in projects:
         num_cards_total += 1
-        if assignment.status == 'success':
+        if _project.status == '3-success':
             num_cards_ok += 1
-        if assignment.status == 'warning':
+        if _project.status == '2-warning':
             num_cards_issues += 1
-        if assignment.status == 'danger':
+        if _project.status == '1-danger':
             num_cards_blocked += 1
 
     context = {
-        'all_syseng_assignments': assignments,
+        'all_syseng_projects': projects,
         'num_cards_total': num_cards_total,
         'num_cards_ok': num_cards_ok,
         'num_cards_issues': num_cards_issues,
@@ -36,6 +36,15 @@ def index(request):
     }
 
     return render(request, 'reporting/index.html', context)
+
+def get_granular_report(request):
+    assignments = warehouse.display_granular_report()
+
+    context = {
+        'all_syseng_assignments': assignments,
+    }
+
+    return render(request, 'reporting/granular.html', context)
 
 def get_unrelated_assignments(request):
     unrelated_assignments = warehouse.get_unrelated_assignments()
