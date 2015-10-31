@@ -2,7 +2,7 @@
 
 from trello.card import *
 import logging
-import project_granular, raw_report
+from . import project_granular, raw_report
 
 
 class GranularReport(object):

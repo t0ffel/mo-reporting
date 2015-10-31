@@ -5,7 +5,7 @@ import os
 from trello import TrelloClient
 import logging
 
-from . import raw_report, project, assignment
+from . import raw_report, project, assignment, granular_report
 
 class TrelloWarehouse(object):
     """
@@ -22,6 +22,9 @@ class TrelloWarehouse(object):
         inprogress_list_id = '55b8e064fb3f1d621db0746f'; #real syseng in progress list
         self.raw_report = raw_report.RawReport("syseng report", self.client, [(syseng_board_id, inprogress_list_id)]);
         self.raw_report.repopulate_projects_list();
+
+        self.gran_report = granular_report.GranularReport("granular report", self.raw_report)
+        self.gran_report.repopulate_report();
 
     def _get_title(self, short_url_id):
         return "UNKNOWN" # TODO get titel of card identified by short_url_id

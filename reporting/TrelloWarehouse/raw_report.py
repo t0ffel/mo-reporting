@@ -2,7 +2,7 @@
 
 from trello.card import *
 import logging
-import project
+from . import project
 
 
 class RawReport(object):
