@@ -5,7 +5,7 @@ import os
 from trello import TrelloClient
 import logging
 
-from . import project, assignment
+import raw_report, project, assignment
 
 class TrelloWarehouse(object):
     """
@@ -18,27 +18,10 @@ class TrelloWarehouse(object):
                                    api_secret = os.environ['TRELLO_API_SECRET'],
                                    token = os.environ['TRELLO_TOKEN'],
                                    token_secret = os.environ['TRELLO_TOKEN_SECRET'])
-
-        for board in self.client.list_boards():
-            if board.name == 'Systems Engineering Assignments'.encode('utf-8'):
-                self.logger.debug('found Systems Engineering Assignments: %s' % (board.id))
-                self.syseng_assignments = board
-            elif board.name == 'Private e2e Product Integration'.encode('utf-8'):
-                self.logger.debug('found e2e Assignments: %s' % (board.id))
-                self.e2e_board = board
-            elif board.name == 'Systems Design and Engineering Projects'.encode('utf-8'):
-                self.logger.debug('found Systems Design and Engineering Projects: %s' % (board.id))
-                self.sysdeseng_projects = board
-
-        self.syseng_members = self.syseng_assignments.all_members()
-        self.e2e_members = self.e2e_board.all_members()
-
-        for list in self.sysdeseng_projects.all_lists():
-            if list.name == 'In Progress'.encode('utf-8'):
-                self.sysdeseng_projects_cards = self.sysdeseng_projects.get_list(list.id).list_cards()
-
-        self.projects = dict()
-        self.assignments = dict()
+        syseng_board_id = '55b8e03be0b7b68131139cf1'; #Real syseng board
+        inprogress_list_id = '55b8e064fb3f1d621db0746f'; #real syseng in progress list
+        self.raw_report = raw_report.RawReport("syseng report", self.client, [(syseng_board_id, inprogress_list_id)]);
+        self.raw_report.repopulate_projects_list();
 
     def _get_title(self, short_url_id):
         return "UNKNOWN" # TODO get titel of card identified by short_url_id
@@ -139,17 +122,10 @@ class TrelloWarehouse(object):
                 if list.name == 'In Progress'.encode('utf-8'):
                     _cards = self.syseng_assignments.get_list(list.id).list_cards()
 
-        for _card in _cards:
-            _label = 'default'
-
-            for label in _card.labels:
-                if label.name == b'Ok':
-                    _label = 'success'
-                if label.name == b'Issues':
-                    _label = 'warning'
-                if label.name == b'Blocked':
-                    _label = 'danger'
-
             _assignments[_card.id] = assignment.Assignment(_card.id, _card.name, None, _status = _label)
 
         return _assignments
+
+    def display_projects(self):
+        """Retrun array of projects"""
+        return self.raw_report.projects;
