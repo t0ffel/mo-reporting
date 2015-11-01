@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import csv
 
 from trello import TrelloClient
 import logging
@@ -136,3 +137,11 @@ class TrelloWarehouse(object):
     def display_granular_report(self):
         "Return detailed report"""
         return self.gran_report.line_items;
+
+    def csv_write(self, _dir_path):
+        csv_file = open(_dir_path + "/" + self.gran_report.full_name + '.csv','w+');
+        csv_writer = csv.writer(csv_file);
+        csv_writer.writerow(["Owner", "Title", "Status", "Tags", "Funding Bucket", "Detailed Status", "Last Updated"]);
+        for line in self.gran_report.line_items:
+            csv_writer.writerow([line.member, line.name, line.status, line.tags, line.funding_buckets, line.detailed_status, line.last_updated]);
+        csv_file.close();

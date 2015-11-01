@@ -2,6 +2,8 @@
 
 from trello.card import *
 import logging
+import datetime
+
 from . import project
 
 
@@ -17,8 +19,9 @@ class RawReport(object):
         self.trello = _trello
         self.projects = []
         self.board_lists = _board_lists
-        self.gen_date = ""
+        self.gen_date = datetime.datetime.now().strftime("%Y-%m-%d.%H:%M")
         self.logger = logging.getLogger("sysengreporting")
+        self.full_name = self.name + "-" + self.gen_date
 
     def __str__(self):
         return "Report '%s' on '%s' owned by '%s'" % (self.name, self.board_lists)

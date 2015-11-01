@@ -19,6 +19,7 @@ class GranularReport(object):
         self.board_lists = _raw_report.board_lists
         self.gen_date = _raw_report.gen_date
         self.logger = logging.getLogger("sysengreporting")
+        self.full_name = self.name + "-" + self.gen_date;
 
     def __str__(self):
         return "Report '%s' on '%s' owned by '%s'" % (self.name, self.board_lists)

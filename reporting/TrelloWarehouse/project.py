@@ -34,7 +34,7 @@ class Project(object):
         return "Project (%s) '%s' owned by '%s'" % (self.id, self.name, self.team)
 
     def get_name(self):
-        self.name = str(self._card.name)
+        self.name = self._card.name.decode(encoding='UTF-8')
 
     def add_assignment(self, assignment):
         self.assignments.append(assignment)
