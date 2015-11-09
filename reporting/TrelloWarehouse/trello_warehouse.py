@@ -6,7 +6,10 @@ import csv
 from trello import TrelloClient
 import logging
 
+import httplib2
+
 from . import raw_report, project, assignment, granular_report
+from .exporter import gwriter
 
 class TrelloWarehouse(object):
     """
@@ -21,11 +24,16 @@ class TrelloWarehouse(object):
                                    token_secret = os.environ['TRELLO_TOKEN_SECRET'])
         syseng_board_id = '55b8e03be0b7b68131139cf1'; #Real syseng board
         inprogress_list_id = '55b8e064fb3f1d621db0746f'; #real syseng in progress list
+        #syseng_board_id = '562e7903530bf0e9c3101ba8' #SysDesEng board
+        #inprogress_list_id = '562e79cf28eca88fa48eebe8' #list with 2 projects
         self.raw_report = raw_report.RawReport("syseng report", self.client, [(syseng_board_id, inprogress_list_id)]);
         self.raw_report.repopulate_projects_list();
 
         self.gran_report = granular_report.GranularReport("granular report", self.raw_report)
         self.gran_report.repopulate_report();
+        self.gSCOPES = "https://www.googleapis.com/auth/drive " + "https://spreadsheets.google.com/feeds/"
+        self. gCLIENT_SECRET_FILE = 'client_secret.json'
+        self.gAPPLICATION_NAME = 'gDrive Trello Warehouse'
 
     def _get_title(self, short_url_id):
         return "UNKNOWN" # TODO get titel of card identified by short_url_id
@@ -139,9 +147,15 @@ class TrelloWarehouse(object):
         return self.gran_report.line_items;
 
     def csv_write(self, _dir_path):
-        csv_file = open(_dir_path + "/" + self.gran_report.full_name + '.csv','w+');
+        csv_file = open(os.path.join(_dir_path, self.gran_report.full_name + '.csv'),'w+');
         csv_writer = csv.writer(csv_file);
         csv_writer.writerow(["Owner", "Title", "Status", "Tags", "Funding Bucket", "Detailed Status", "Last Updated"]);
         for line in self.gran_report.line_items:
             csv_writer.writerow([line.member, line.name, line.status, line.tags, line.funding_buckets, line.detailed_status, line.last_updated]);
         csv_file.close();
+
+
+    def write_gspreadsheet(self):
+        writer = gwriter.GWriter(self.gran_report.full_name)
+        writer.write_data(self.gran_report.line_items)
+
