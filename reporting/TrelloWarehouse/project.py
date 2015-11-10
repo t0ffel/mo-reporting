@@ -48,6 +48,7 @@ class Project(object):
         self.content['funding_buckets'] = [];
         self.content['team'] = [];
         self.content['type'] = [];
+        self.content['project'] = [];
 
         # obtain all tags
         _all_tags = re.findall('\[.*?\]',(str(self._card.name)))
@@ -67,6 +68,10 @@ class Project(object):
             elif tag[0:6] == '[type_':
                 self.content['type'].append(tag[6:-1])
                 self.logger.debug('Found type tag: %s' % (self.content['type'][-1]))
+                continue;
+            elif tag[0:9] == '[project_':
+                self.content['project'] = tag[9:-1]
+                self.logger.debug('Found project tag: %s' % (self.content['project']))
                 continue;
             self.content['tags'].append(tag);
 
