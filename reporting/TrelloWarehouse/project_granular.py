@@ -15,12 +15,12 @@ class ProjectGranular(object):
 
         self.line_id = _line_id
         self.project = _project
-        self.content = _project.content
+        self.content = _project.content.copy()
         self.content['members'] = _member
         self.assignments = _project.assignments
         self.logger = logging.getLogger("sysengreporting")
 
     def __str__(self):
-        return "Project (%s) '%s' owned by '%s'" % (self.line_id, self.name, self.member)
+        return "Project (%s) '%s' owned by '%s'" % (self.line_id, self.content['name'], self.content['members'])
 
 

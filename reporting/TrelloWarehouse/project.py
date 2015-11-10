@@ -46,6 +46,9 @@ class Project(object):
     def get_tags(self):
         self.content['tags'] = [];
         self.content['funding_buckets'] = [];
+        self.content['team'] = [];
+        self.content['type'] = [];
+
         # obtain all tags
         _all_tags = re.findall('\[.*?\]',(str(self._card.name)))
         _all_tags.extend(re.findall('\[.*?\]', str(self._card.desc)))
@@ -56,6 +59,14 @@ class Project(object):
             if tag[0:4] == '[fb_':
                 self.content['funding_buckets'].append(tag[4:-1])
                 self.logger.debug('Found fb tag: %s' % (self.content['funding_buckets'][-1]))
+                continue;
+            elif tag[0:6] == '[team_':
+                self.content['team'].append(tag[6:-1])
+                self.logger.debug('Found team tag: %s' % (self.content['team'][-1]))
+                continue;
+            elif tag[0:6] == '[type_':
+                self.content['type'].append(tag[6:-1])
+                self.logger.debug('Found type tag: %s' % (self.content['type'][-1]))
                 continue;
             self.content['tags'].append(tag);
 
