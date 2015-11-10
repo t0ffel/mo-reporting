@@ -1,30 +1,26 @@
 # -*- coding: utf-8 -*-
 
-import re
 from trello.card import *
+import logging
+import re
 
+class ProjectGranular(object):
+    """The ProjectGranular class reprsents a Project-member line item in the context of Systems Design and Engineering"""
+    def __init__(self, _line_id, _project, _member):
+        """
+        :param _line_id: ID of the trello card representing this Project
+        :param _project: project object
+        :param _member: name of the member
+        """
 
-class Assignment(object):
-    """The Assignment class reprsents an Assignment of a Person to a Project"""
-    def __init__(self, _id, _title, _project, _owner = '', _status = 'UNKNOWN', _funding_bucket = ''):
-        """
-        :param _id: ID of the trello card representing this Assignment
-        :param _title: Title of the trello card representing this Assignment
-        :param _project: the Project this assignment belongs to
-        """
-        self.id = _id
-        self.title = _title
+        self.line_id = _line_id
         self.project = _project
-        self.tags = re.findall('\[(.+?)\]', str(self.title)) # there must be no empty tag!!
-        self.owner = _owner
-        self.status = _status
-        self.funding_bucket = _funding_bucket
+        self.content = _project.content.copy()
+        self.content['members'] = _member
+        self.assignments = _project.assignments
+        self.logger = logging.getLogger("sysengreporting")
 
     def __str__(self):
-        if self.project is None:
-            return "Assignment (id: %s) '%s' is UNRELATED, tagged with %s" % (self.id, self.title, ', '.join(str(x) for x in self.tags))
+        return "Project (%s) '%s' owned by '%s'" % (self.line_id, self.content['name'], self.content['members'])
 
-        return "Assignment (id: %s) '%s' for Project '%s', tagged with %s" % (self.id, self.title, self.project.name, ', '.join(str(x) for x in self.tags))
 
-    def tagss(self):
-        return ', '.join(str(x) for x in self.tags)
