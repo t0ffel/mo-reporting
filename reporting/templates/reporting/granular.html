@@ -75,13 +75,13 @@
               </thead>
               <tbody>{% for project in all_syseng_assignments %}
                 <tr>
-                  <td><span class="label label-{{ project.label }}"><span class="pficon-info"></span> {{ project.status }}</td>
-                  <td><a href="https://trello.com/c/{{ project.id }}">{{ project.name }}</a></td>
-                  <td>{{ project.member }} </td>
-                  <td>{{ project.tags }}</td>
-                  <td>{{ project.funding_buckets }}</td>
-                  <td>{{ project.detailed_status }}</td>
-                  <td>{{ project.last_updated }}</td>
+                  <td><span class="label label-{{ project.content.label }}"><span class="pficon-info"></span> {{ project.content.status }}</td>
+                  <td><a href="https://trello.com/c/{{ project.content.id }}">{{ project.content.name }}</a></td>
+                  <td>{{ project.content.members }} </td>
+                  <td>{{ project.content.tags }}</td>
+                  <td>{{ project.content.funding_buckets }}</td>
+                  <td>{{ project.content.detailed_status }}</td>
+                  <td>{{ project.content.last_updated }}</td>
                 </tr>{% endfor %}
               </tbody>
             </table>

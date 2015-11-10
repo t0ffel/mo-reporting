@@ -46,6 +46,7 @@ class RawReport(object):
                 self.projects[-1].get_status();
                 self.projects[-1].get_members();
                 self.projects[-1].get_detailed_status();
-                
+                self.projects[-1].get_url();
+                self.projects[-1].get_board_list(tr_board.name, tr_list.name);                
 
         

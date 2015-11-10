@@ -157,5 +157,6 @@ class TrelloWarehouse(object):
 
     def write_gspreadsheet(self):
         writer = gwriter.GWriter(self.gran_report.full_name)
-        writer.write_data(self.gran_report.line_items)
+        writer.write_data(self.gran_report.line_items, writer.wks_granular)
+        writer.write_data(self.raw_report.projects, writer.wks_project)
 

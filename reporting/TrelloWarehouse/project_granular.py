@@ -15,15 +15,8 @@ class ProjectGranular(object):
 
         self.line_id = _line_id
         self.project = _project
-        self.name = _project.name
-        self.id = _project.id
-        self.member = _member
-        self.funding_buckets = _project.funding_buckets
-        self.status = _project.status
-        self.label = _project.label
-        self.last_updated = _project.last_updated
-        self.detailed_status = _project.detailed_status
-        self.tags = _project.tags
+        self.content = _project.content
+        self.content['members'] = _member
         self.assignments = _project.assignments
         self.logger = logging.getLogger("sysengreporting")
 

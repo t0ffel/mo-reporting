@@ -28,12 +28,12 @@ class GranularReport(object):
         self.line_items = []
         line_id = 0
         for project in self.raw_report.projects:
-            self.logger.debug('Granular report on project: %s' % (project.name))
-            if not project.members:
+            self.logger.debug('Granular report on project: %s' % (project.content['name']))
+            if not project.content['members']:
                 self.line_items.append(project_granular.ProjectGranular(line_id, project, ""))
                 line_id += 1
-                self.logger.debug('no members in the project %s' % (project.name))
-            for member in project.members:
+                self.logger.debug('no members in the project %s' % (project.content['name']))
+            for member in project.content['members']:
                 self.line_items.append(project_granular.ProjectGranular(line_id, project, member.full_name))
                 self.logger.debug('Project member is %s' % (member.full_name))
                 line_id += 1

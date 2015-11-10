@@ -20,11 +20,11 @@ def index(request):
 
     for _project in projects:
         num_cards_total += 1
-        if _project.status == '3-success':
+        if _project.content['status'] == '3-success':
             num_cards_ok += 1
-        if _project.status == '2-warning':
+        if _project.content['status'] == '2-warning':
             num_cards_issues += 1
-        if _project.status == '1-danger':
+        if _project.content['status'] == '1-danger':
             num_cards_blocked += 1
 
     context = {

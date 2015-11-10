@@ -36,21 +36,24 @@ class GWriter(object):
 
         #self.tmp = self.gc.open_by_key('1U9n7Onrx48azTxInuWOQN5fBHXuFGxYToOlPpRiHo5o')
         self._create_new(report_name)
-        self.wks = self.gc.open(report_name).sheet1
+        self.report = self.gc.open(report_name)
+        self.wks_granular = self.report.sheet1
 
+        self.wks_project = self.report.add_worksheet(title="Projects", rows="100", cols="20")
+#        self.wks_project = self.gc.open(report_name).sheet2
         # Need to create the spreadsheet first!
 
         # Need to open the spread sheet and select worksheet
 
 
-    def write_data(self, lines):
+    def write_data(self, lines, sheet):
         """
         Iterate through all the rows/columns and write the actual data
         """
-        self.wks.insert_row([ "Project ID", "Project" , "Owner" , "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags"])
+        sheet.insert_row([ "Project ID", "Project" , "Owner" , "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags"])
         i = 2; # row index
         for line in lines:
-            self.wks.insert_row([line.id, line.name, line.member, line.funding_buckets, line.status, line.last_updated, line.detailed_status, line.tags], i);
+            sheet.insert_row([line.content['id'], line.content['name'], line.content['members'], line.content['funding_buckets'], line.content['status'], line.content['last_updated'], line.content['detailed_status'], line.content['tags'], line.content['short_url'], line.content['board_name'], line.content['list_name'] ], i);
             i += 1;
 
     def write_metadata(self):
@@ -58,7 +61,7 @@ class GWriter(object):
         Write name/date of the report.. to 2nd worksheet?
         write 1st row here as well.
         """
-        self.wks.insert_row([ "Project ID", "Project" , "Owner" , "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags"])
+        self.wks.insert_row([ "Project ID", "Project" , "Owner" , "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags", "Short URL", "Board", "List"])
 
     def csv_write(self, _dir_path):
         csv_file = open(os.path.join(_dir_path, self.gran_report.full_name + '.csv'),'w+');
