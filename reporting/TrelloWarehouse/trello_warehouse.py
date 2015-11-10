@@ -8,7 +8,7 @@ import logging
 
 import httplib2
 
-from . import raw_report, project, assignment, granular_report
+from . import group_assignment, report_group_assignments, assignment, report_assignments
 from .exporter import gwriter
 
 class TrelloWarehouse(object):
@@ -26,11 +26,11 @@ class TrelloWarehouse(object):
         inprogress_list_id = '55b8e064fb3f1d621db0746f'; #real syseng in progress list
         #syseng_board_id = '562e7903530bf0e9c3101ba8' #SysDesEng board
         #inprogress_list_id = '562e79cf28eca88fa48eebe8' #list with 2 projects
-        self.raw_report = raw_report.RawReport("syseng report", self.client, [(syseng_board_id, inprogress_list_id)]);
-        self.raw_report.repopulate_projects_list();
+        self.group_report = report_group_assignments.GroupAssignmentsReport("syseng report", self.client, [(syseng_board_id, inprogress_list_id)]);
+        self.group_report.repopulate_report();
 
-        self.gran_report = granular_report.GranularReport("granular report", self.raw_report)
-        self.gran_report.repopulate_report();
+        self.assignments_report = report_assignments.AssignmentsReport("Assignments Report", self.group_report)
+        self.assignments_report.repopulate_report();
         self.gSCOPES = "https://www.googleapis.com/auth/drive " + "https://spreadsheets.google.com/feeds/"
         self. gCLIENT_SECRET_FILE = 'client_secret.json'
         self.gAPPLICATION_NAME = 'gDrive Trello Warehouse'
@@ -156,7 +156,7 @@ class TrelloWarehouse(object):
 
 
     def write_gspreadsheet(self):
-        writer = gwriter.GWriter(self.gran_report.full_name)
-        writer.write_data(self.gran_report.line_items, writer.wks_granular)
+        writer = gwriter.GWriter(self.assignments_report.full_name)
+        writer.write_data(self.assignments_report.assignments, writer.wks_granular)
         #writer.write_data(self.raw_report.projects, writer.wks_project)
 

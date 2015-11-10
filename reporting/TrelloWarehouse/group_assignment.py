@@ -4,15 +4,15 @@ from trello.card import *
 import logging
 import re
 
-class Project(object):
-    """The Project class reprsents a Project in the context of Systems Design and Engineering"""
+class GroupAssignment(object):
+    """The GroupAssignment class reprsents a trello assignment card. The difference from Assignment class is that GroupAssignment may have several members. This is in the context of Systems Design and Engineering"""
     def __init__(self, _id, _trello):
         """
         :param _id: ID of the trello card representing this Project
         :param _trello: TrelloClient object
         """
         self.content = {
-            'team' : "SysEng",
+            'team' : "", #sub-team within SysEng group
             'name' : '',
             'id'   : _id,
             'members': [],
@@ -28,20 +28,22 @@ class Project(object):
             'tags' : [],
         }
         self.trello = _trello
-        self.assignments = []
         self.logger = logging.getLogger("sysengreporting")
         self._card = self.trello.get_card(self.content['id'])
-        self._card.fetch(True); #fetch all card's properties at once
-        self.logger.debug('----Project object created----')
+        while True:
+            try:
+                self._card.fetch(True); #fetch all card's properties at once
+            except ResourceUnavailable:
+                self.logger.debug('Trello unavailable!')
+                continue
+            break
+        self.logger.debug('----GroupAssignment object created----')
 
     def __str__(self):
-        return "Project (%s) '%s' owned by '%s'" % (self.content['id'], self.content['name'], self.content['team'])
+        return "GroupAssignment (%s) '%s' owned by '%s'" % (self.content['id'], self.content['name'], self.content['team'])
 
     def get_name(self):
         self.content['name'] = self._card.name.decode(encoding='UTF-8')
-
-    def add_assignment(self, assignment):
-        self.assignments.append(assignment)
 
     def get_tags(self):
         self.content['tags'] = [];
@@ -96,7 +98,13 @@ class Project(object):
     def get_members(self):
         self.content['members'] = [];
         for _member_id in self._card.member_id:
-            self.content['members'].append(self.trello.get_member(_member_id))
+            while True:
+                try:
+                    self.content['members'].append(self.trello.get_member(_member_id))
+                except ResourceUnavailable:
+                    self.logger.debug('Trello unavailable!')
+                    continue
+                break
             self.logger.debug('Adding members %s to the card %s' % (self.content['members'][-1].full_name, self.content['name']));
             self.content['readable_members'] += self.content['members'][-1].full_name + "\n"
 

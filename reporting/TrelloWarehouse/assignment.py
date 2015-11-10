@@ -4,23 +4,22 @@ from trello.card import *
 import logging
 import re
 
-class ProjectGranular(object):
-    """The ProjectGranular class reprsents a Project-member line item in the context of Systems Design and Engineering"""
-    def __init__(self, _line_id, _project, _member):
+class Assignment(object):
+    """The Assignment class represents individual person's task. It is a line item in the Systems Design and Engineering assignments report"""
+    def __init__(self, _line_id, _g_assignment, _member):
         """
         :param _line_id: ID of the trello card representing this Project
-        :param _project: project object
+        :param _g_assignment: GroupAssignment object
         :param _member: name of the member
         """
 
         self.line_id = _line_id
-        self.project = _project
-        self.content = _project.content.copy()
+        self.group_assignment = _g_assignment
+        self.content = _g_assignment.content.copy()
         self.content['members'] = _member
-        self.assignments = _project.assignments
         self.logger = logging.getLogger("sysengreporting")
 
     def __str__(self):
-        return "Project (%s) '%s' owned by '%s'" % (self.line_id, self.content['name'], self.content['members'])
+        return "Assignment (%s) '%s' owned by '%s'" % (self.line_id, self.content['name'], self.content['members'])
 
 

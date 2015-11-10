@@ -50,7 +50,7 @@ class GWriter(object):
         """
         Iterate through all the rows/columns and write the actual data
         """
-        sheet.insert_row([ "Project ID", "Assignment" , "Owner" , "Project", "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags", "Short URL", "Board", "List", "Team", "Type"])
+        sheet.insert_row([ "Assignment ID", "Assignment" , "Owner" , "Project", "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags", "Short URL", "Board", "List", "Team", "Type"])
         i = 2; # row index
         for line in lines:
             self.logger.debug('Adding project %s, owned by %s' % (line.content['name'], line.content['members']))
