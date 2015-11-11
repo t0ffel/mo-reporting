@@ -22,11 +22,13 @@ class TrelloWarehouse(object):
                                    api_secret = os.environ['TRELLO_API_SECRET'],
                                    token = os.environ['TRELLO_TOKEN'],
                                    token_secret = os.environ['TRELLO_TOKEN_SECRET'])
-        syseng_board_id = '55b8e03be0b7b68131139cf1'; #Real syseng board
-        inprogress_list_id = '55b8e064fb3f1d621db0746f'; #real syseng in progress list
+        syseng_inprogress = [('55b8e03be0b7b68131139cf1', '55b8e064fb3f1d621db0746f')]
+        syseng_all = [('55b8e03be0b7b68131139cf1', '55b8e064fb3f1d621db0746f'), ('55b8e03be0b7b68131139cf1', '55b8e05ebda5066e15c24025'), ('55b8e03be0b7b68131139cf1', '55b8e83c1df82cf0bbd4edba')] # SysEng: Backlog, Investigation, In Progress
+        #syseng_board_id = '55b8e03be0b7b68131139cf1'; #Real syseng board
+        #inprogress_list_id = '55b8e064fb3f1d621db0746f'; #real syseng in progress list
         #syseng_board_id = '562e7903530bf0e9c3101ba8' #SysDesEng board
         #inprogress_list_id = '562e79cf28eca88fa48eebe8' #list with 2 projects
-        self.group_report = report_group_assignments.GroupAssignmentsReport("syseng report", self.client, [(syseng_board_id, inprogress_list_id)]);
+        self.group_report = report_group_assignments.GroupAssignmentsReport("syseng report", self.client, syseng_all);
         self.group_report.repopulate_report();
 
         self.assignments_report = report_assignments.AssignmentsReport("Assignments Report", self.group_report)
