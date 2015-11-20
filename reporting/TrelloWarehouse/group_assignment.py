@@ -29,12 +29,12 @@ class GroupAssignment(object):
         }
         self.trello = _trello
         self.logger = logging.getLogger("sysengreporting")
-        self._card = self.trello.get_card(self.content['id'])
         while True:
             try:
+                self._card = self.trello.get_card(self.content['id'])
                 self._card.fetch(True); #fetch all card's properties at once
             except ResourceUnavailable:
-                self.logger.debug('Trello unavailable!')
+                self.logger.error('Trello unavailable!')
                 continue
             break
         self.logger.debug('----GroupAssignment object created----')

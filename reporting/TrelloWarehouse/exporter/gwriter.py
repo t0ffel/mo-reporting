@@ -54,7 +54,13 @@ class GWriter(object):
         i = 2; # row index
         for line in lines:
             self.logger.debug('Adding project %s, owned by %s' % (line.content['name'], line.content['members']))
-            sheet.insert_row([line.content['id'], line.content['name'], line.content['members'], line.content['project'], line.content['funding_buckets'], line.content['status'], line.content['last_updated'], line.content['detailed_status'], line.content['tags'], line.content['short_url'], line.content['board_name'], line.content['list_name'], line.content['team'], line.content['type'] ], i);
+            while True:
+                try:
+                    sheet.insert_row([line.content['id'], line.content['name'], line.content['members'], line.content['project'], line.content['funding_buckets'], line.content['status'], line.content['last_updated'], line.content['detailed_status'], line.content['tags'], line.content['short_url'], line.content['board_name'], line.content['list_name'], line.content['team'], line.content['type'] ], i);
+                except:
+                    self.logger.error('google unavailable! retrying!')
+                    continue
+                break
             i += 1;
 
     def write_metadata(self):
