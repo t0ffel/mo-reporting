@@ -50,15 +50,19 @@ class GWriter(object):
         """
         Iterate through all the rows/columns and write the actual data
         """
-        sheet.insert_row([ "Assignment ID", "Assignment" , "Owner" , "Project", "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags", "Short URL", "Board", "List", "Team", "Type"])
+        sheet.insert_row([ "Assignment ID", "Assignment" , "Owner" , "Project", "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags", "Short URL", "Board", "List", "Team", "Type", "Last Moved", "Due Date"])
         i = 2; # row index
         for line in lines:
             self.logger.debug('Adding project %s, owned by %s' % (line.content['name'], line.content['members']))
-            while True:
+            j = 0
+            while j < 10:
+                j += 1;
                 try:
-                    sheet.insert_row([line.content['id'], line.content['name'], line.content['members'], line.content['project'], line.content['funding_buckets'], line.content['status'], line.content['last_updated'], line.content['detailed_status'], line.content['tags'], line.content['short_url'], line.content['board_name'], line.content['list_name'], line.content['team'], line.content['type'] ], i);
-                except:
-                    self.logger.error('google unavailable! retrying!')
+                    sheet.insert_row([line.content['id'], line.content['name'], line.content['members'], line.content['project'], line.content['funding_buckets'], line.content['status'], line.content['last_updated'], line.content['detailed_status'], line.content['tags'], line.content['short_url'], line.content['board_name'], line.content['list_name'], line.content['team'], line.content['type'] ,line.content['latest_move'], line.content['due_date'] ], i);
+                except Exception as e:
+                    self.logger.error('google unavailable! retrying! %s' % (e))
+                    if j == 10:
+                        raise Exception;
                     continue
                 break
             i += 1;

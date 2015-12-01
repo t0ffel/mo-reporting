@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from trello.card import *
+from trello.exceptions import *
+
 import logging
 import re
 
@@ -26,6 +28,8 @@ class GroupAssignment(object):
             'board_name': '',
             'list_name': '',
             'tags' : [],
+            'latest_move': '',
+            'due_date': '',
         }
         self.trello = _trello
         self.logger = logging.getLogger("sysengreporting")
@@ -33,8 +37,8 @@ class GroupAssignment(object):
             try:
                 self._card = self.trello.get_card(self.content['id'])
                 self._card.fetch(True); #fetch all card's properties at once
-            except ResourceUnavailable:
-                self.logger.error('Trello unavailable!')
+            except ResourceUnavailable as e:
+                self.logger.error('Trello unavailable! %s' % (e))
                 continue
             break
         self.logger.debug('----GroupAssignment object created----')
@@ -101,23 +105,35 @@ class GroupAssignment(object):
             while True:
                 try:
                     self.content['members'].append(self.trello.get_member(_member_id))
-                except ResourceUnavailable:
-                    self.logger.debug('Trello unavailable!')
+                except ResourceUnavailable as e:
+                    self.logger.debug('Trello unavailable! %s' % (e))
                     continue
                 break
             self.logger.debug('Adding members %s to the card %s' % (self.content['members'][-1].full_name, self.content['name']));
             self.content['readable_members'] += self.content['members'][-1].full_name + "\n"
 
     def get_detailed_status(self):
+        while True:
+            try:
+                self._card.fetch_actions('updateCard:idList')
+            except ResourceUnavailable as e:
+                self.logger.error('Trello unavailable! %s' % (e))
+                continue
+            break
         self.logger.debug('comments: %s' % (self._card.comments))
         if self._card.comments != []:
             self.content['detailed_status'] = self._card.comments[-1]['data']['text'];
             self.content['last_updated'] = self._card.comments[-1]['date'];
         else:
             self.content['detailed_status'] = 'n/a'
-            self.content['last_updated'] = ''
+            self.content['last_updated'] = self._card.dateLastActivity.strftime("%Y-%m-%d %H:%M");
         self.logger.debug('Detailed Status: %s' % (self.content['detailed_status']));
         self.logger.debug('Last Updated: %s' % (self.content['last_updated']));
+        try:
+            self.content['latest_move']=self._card.latestCardMove_date.strftime("%Y-%m-%d %H:%M");
+        except IndexError:
+            self.content['latest_move']='';
+        self.content['due_date'] = self._card.due_date;
 
     def get_url(self):
         self.content['short_url'] = self._card.url

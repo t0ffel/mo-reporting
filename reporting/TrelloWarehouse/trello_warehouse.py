@@ -26,6 +26,7 @@ class TrelloWarehouse(object):
         syseng_all = [('55b8e03be0b7b68131139cf1', '55b8e064fb3f1d621db0746f'), # SysEng: In Progress
                       ('55b8e03be0b7b68131139cf1', '55b8e05ebda5066e15c24025'), # SysEng: Backlog
                       ('55b8e03be0b7b68131139cf1', '55b8e83c1df82cf0bbd4edba'), # SysEng: Investigation
+                      ('55b8e03be0b7b68131139cf1', '55b8e4428ec04b31597cd5c3'), # SysEng: Completed
                       ('5640b810860935a27a6139d6', '5640bb2965cec07628642994'), # e2e Product Integration board: Backlog 
                       ('5640b810860935a27a6139d6', '5640bb2ac2110e0628dde44a'), # e2e Product Integration board: Next
                       ('5640b810860935a27a6139d6', '5640bb2c9826d99d92fbfd7b')] # e2e Product Integration board: In Progress 
