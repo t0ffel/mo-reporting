@@ -4,6 +4,7 @@ from TrelloWarehouse import trello_warehouse
 import logging
 import tempfile
 import os
+import yaml
 
 import httplib2
 from apiclient import discovery
@@ -20,19 +21,17 @@ def main():
 
     logger.addHandler(_stdlog)
 
-    warehouse = trello_warehouse.TrelloWarehouse()
+
+    with open("config/report.yml", 'r') as stream:
+        report_config = yaml.load(stream)
+
+    warehouse = trello_warehouse.TrelloWarehouse(report_config[':trello_sources'])
     logger.info('Welcome to the Warehouse!')
 
-    # save tmp csv file
 
-    # upload tmp file to google drive
-#    credentials = warehouse.g_authenticate();
-#    http = credentials.authorize(httplib2.Http())
-#    service = discovery.build('drive', 'v2', http=http)
-
-#    res = warehouse.insert_file(service, warehouse.gran_report.full_name + '.csv', 'report file', 'text/csv', os.path.join(tmpdir, warehouse.gran_report.full_name + '.csv'))
-#    logger.info('Upload status: %s' % (res))    
-
+    
+    if not warehouse.get_granular_report():
+        return False
     warehouse.write_gspreadsheet()
 
 if __name__ == '__main__':

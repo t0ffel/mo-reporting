@@ -3,6 +3,7 @@
 from trello.card import *
 import logging
 import datetime
+from trello.exceptions import *
 
 from . import group_assignment
 
@@ -31,7 +32,11 @@ class GroupAssignmentsReport(object):
         for (tr_board_id, tr_list_id) in self.board_lists:
 
             # get board and list to derive projects from
-            tr_board = self.trello.get_board(tr_board_id);
+            try:
+                tr_board = self.trello.get_board(tr_board_id);
+            except Unauthorized as e:
+                self.logger.error('Unauthorized to use this Trello board: %s. Error: %s' % (tr_board_id,e))
+                return False;
             self.logger.debug('Obtained board: %s' % (tr_board.name));
             tr_list = tr_board.get_list(tr_list_id);
             self.logger.debug('Obtained board: %s' % (tr_list.name));
@@ -48,5 +53,5 @@ class GroupAssignmentsReport(object):
                 self.group_assignments[-1].get_detailed_status();
                 self.group_assignments[-1].get_url();
                 self.group_assignments[-1].get_board_list(tr_board.name, tr_list.name);                
-
+        return True
         

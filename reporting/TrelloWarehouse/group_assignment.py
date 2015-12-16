@@ -123,10 +123,9 @@ class GroupAssignment(object):
         self.logger.debug('comments: %s' % (self._card.comments))
         if self._card.comments != []:
             self.content['detailed_status'] = self._card.comments[-1]['data']['text'];
-            self.content['last_updated'] = self._card.comments[-1]['date'];
         else:
             self.content['detailed_status'] = 'n/a'
-            self.content['last_updated'] = self._card.dateLastActivity.strftime("%Y-%m-%d %H:%M");
+        self.content['last_updated'] = self._card.dateLastActivity.strftime("%Y-%m-%d %H:%M");
         self.logger.debug('Detailed Status: %s' % (self.content['detailed_status']));
         self.logger.debug('Last Updated: %s' % (self.content['last_updated']));
         try:

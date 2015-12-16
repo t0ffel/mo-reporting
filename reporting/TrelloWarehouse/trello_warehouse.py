@@ -16,135 +16,35 @@ class TrelloWarehouse(object):
     Class representing all Trello information required to do the SysDesEng reporting.
     """
 
-    def __init__(self):
+    def __init__(self, trello_sources):
         self.logger = logging.getLogger("sysengreporting")
         self.client = TrelloClient(api_key = os.environ['TRELLO_API_KEY'],
                                    api_secret = os.environ['TRELLO_API_SECRET'],
                                    token = os.environ['TRELLO_TOKEN'],
                                    token_secret = os.environ['TRELLO_TOKEN_SECRET'])
-        syseng_inprogress = [('55b8e03be0b7b68131139cf1', '55b8e064fb3f1d621db0746f')]
-        syseng_all = [('55b8e03be0b7b68131139cf1', '55b8e064fb3f1d621db0746f'), # SysEng: In Progress
-                      ('55b8e03be0b7b68131139cf1', '55b8e05ebda5066e15c24025'), # SysEng: Backlog
-                      ('55b8e03be0b7b68131139cf1', '55b8e83c1df82cf0bbd4edba'), # SysEng: Investigation
-                      ('55b8e03be0b7b68131139cf1', '55b8e4428ec04b31597cd5c3'), # SysEng: Completed
-                      ('5640b810860935a27a6139d6', '5640bb2965cec07628642994'), # e2e Product Integration board: Backlog 
-                      ('5640b810860935a27a6139d6', '5640bb2ac2110e0628dde44a'), # e2e Product Integration board: Next
-                      ('5640b810860935a27a6139d6', '5640bb2c9826d99d92fbfd7b')] # e2e Product Integration board: In Progress 
-        #syseng_board_id = '55b8e03be0b7b68131139cf1'; #Real syseng board
-        #inprogress_list_id = '55b8e064fb3f1d621db0746f'; #real syseng in progress list
-        #syseng_board_id = '562e7903530bf0e9c3101ba8' #SysDesEng board
-        #inprogress_list_id = '562e79cf28eca88fa48eebe8' #list with 2 projects
-        self.group_report = report_group_assignments.GroupAssignmentsReport("syseng report", self.client, syseng_all);
-        self.group_report.repopulate_report();
 
-        self.assignments_report = report_assignments.AssignmentsReport("Assignments Report", self.group_report)
-        self.assignments_report.repopulate_report();
+        # Populate the list of (board, lists) tuples on which to report
+        self.report_src = []
+        for board_t in trello_sources.keys():
+            for list_t in trello_sources[board_t][':lists'].keys():
+                self.logger.debug("Adding board %s, list %s to the report" % (trello_sources[board_t][':board_id'], trello_sources[board_t][':lists'][list_t]))
+                self.report_src.append( (trello_sources[board_t][':board_id'], trello_sources[board_t][':lists'][list_t]) )
+
+        # Google access info
+        # TODO: to move out
         self.gSCOPES = "https://www.googleapis.com/auth/drive " + "https://spreadsheets.google.com/feeds/"
-        self. gCLIENT_SECRET_FILE = 'client_secret.json'
+        self.gCLIENT_SECRET_FILE = 'client_secret.json'
         self.gAPPLICATION_NAME = 'gDrive Trello Warehouse'
 
-    def _get_title(self, short_url_id):
-        return "UNKNOWN" # TODO get titel of card identified by short_url_id
 
-    def _add_project(self, project):
-        pass
-
-    def _add_assignment(self, assignment):
-        pass
-
-    def get_projects(self):
-        self.projects.clear()
-
-        # check if there are some SysDesEng projects at all
-        if self.sysdeseng_projects_cards is not None:
-            # and for each project
-            for _project in self.sysdeseng_projects_cards:
-                self.logger.debug('fetching card: %s' % (_project.name))
-                _project.fetch(True) # get the details from trello.com
-
-                _p = project.Project('Systems Engineering', _project.name, _project.id  )
-                self.projects[_project.id] = _p
-
-                self.logger.debug('new project: %s' % str(_p))
-
-                # if the project's card has a checklist
-                if _project.checklists is not None:
-                    # it is per definition, the list of assignments
-                    for item in _project.checklists[0].items:
-                        try: # lets try to convert it into an Assignment
-                            _aid = item['name'].split('/')[4]
-                            self.assignments[_aid] = assignment.Assignment(_aid, self._get_title(item['name']), _p)
-
-                            self.logger.debug("new assignment %s" % str(self.assignments[_aid]))
-                        except IndexError: # if there is no URL in there...
-                            self.logger.warning("Assignment '%s' did not link back to a trello card." % (item['name']))
-                            pass
-        else:
-            self.logger.error('sysdeseng_projects_cards was None')
-
-        return self.projects
-
-    def get_all_assignment_ids(self):
-        """function returns a list of IDs of all assignments"""
-
-        return self.assignments.keys()
-
-    def get_unrelated_assignments(self):
-        """function to filter out any assignment that is not related to a project"""
-
-        _assignments = []
-        result = dict()
-
-        all_known_assignments = self.get_all_assignment_ids()
-
-        # lets find the SysEng 'In Progress' list and all its cards
-        self.logger.debug('adding SysEng assignments')
-        for list in self.syseng_assignments.all_lists():
-            if list.name == 'In Progress'.encode('utf-8'):
-                _assignments = _assignments + self.syseng_assignments.get_list(list.id).list_cards()
-
-        # and append the E2E 'In Progress' list's cards
-        self.logger.debug('adding E2E assignments')
-        for list in self.e2e_board.all_lists():
-            if list.name == 'In Progress'.encode('utf-8'):
-                _assignments = _assignments + self.syseng_assignments.get_list(list.id).list_cards()
-
-        # and get all cards aka assignments
-        for _assignment in _assignments:
-            _aid = _assignment.url.split('/')[4]
-            if _aid in all_known_assignments:
-                self.logger.info("we have had assignment '%s' within project '%s'" % (_aid, self.assignments[_aid].project))
-            else:
-                result[_aid] = assignment.Assignment(_aid, _assignment.name, None)
-
-                self.logger.debug('unrelated assignment: %s' % str(result[_aid]))
-
-        return result
-
-    def get_assignments(self, project_id):
-        _assignments = []
-
-        try:
-            _assignments = self.projects[project_id].assignments
-        except KeyError as e:
-            raise
-
-        return _assignments
-
-    def get_assignments0(self, team_name):
-        """Return a dict() of SysEng assignments."""
-
-        _cards = []
-        _assignments = dict()
-
-        if team_name == 'SysEng':
-            for list in self.syseng_assignments.all_lists():
-                if list.name == 'In Progress'.encode('utf-8'):
-                    _cards = self.syseng_assignments.get_list(list.id).list_cards()
-
-            _assignments[_card.id] = assignment.Assignment(_card.id, _card.name, None, _status = _label)
-
-        return _assignments
+    def get_granular_report(self):
+        self.group_report = report_group_assignments.GroupAssignmentsReport("syseng report", self.client, self.report_src);
+        if not self.group_report.repopulate_report():
+            self.logger.error('Failed to populate report from Trello');
+            return False;
+        self.assignments_report = report_assignments.AssignmentsReport("Assignments Report", self.group_report)
+        self.assignments_report.repopulate_report();
+        return True;
 
     def display_projects(self):
         """Retrun array of projects"""
@@ -168,3 +68,18 @@ class TrelloWarehouse(object):
         writer.write_data(self.assignments_report.assignments, writer.wks_granular)
         #writer.write_data(self.raw_report.projects, writer.wks_project)
 
+    def list_boards(self):
+        syseng_boards = self.client.list_boards()
+        for board in syseng_boards:
+            for tlist in board.all_lists():
+                self.logger.debug('board name: %s is here, board ID is: %s; list %s is here, list ID is: %s' % (board.name, board.id, tlist.name, tlist.id)) 
+
+    def get_assignment_details(self, assignment_id):
+        gassign = group_assignment.GroupAssignment(assignment_id, self.client)
+        gassign.get_name()
+        gassign.get_members()
+        gassign.get_tags();
+        gassign.get_status();
+        gassign.get_detailed_status();
+        logger.debug('latest move is: %s' % self.gassign.content['latest_move'])
+        logger.debug('Card content: %s' % self.gassign.content)
