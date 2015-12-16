@@ -10,7 +10,7 @@ from . import group_assignment
 
 class GroupAssignmentsReport(object):
     """The GroupAssignmentReport is a helper class represents a report structure for the assignments report where 1 line corresponds to 1 card"""
-    def __init__(self, _name, _trello, _board_lists):
+    def __init__(self, _name, _trello, _board_lists, _special_tags):
         """
         :param _name: the name this report
         :param _trello: TrelloClient obj
@@ -23,6 +23,7 @@ class GroupAssignmentsReport(object):
         self.gen_date = datetime.datetime.now().strftime("%Y-%m-%d.%H:%M")
         self.logger = logging.getLogger("sysengreporting")
         self.full_name = self.name + "-" + self.gen_date
+        self.special_tags = _special_tags
 
     def __str__(self):
         return "Report '%s' on '%s' owned by '%s'" % (self.name, self.board_lists)
@@ -47,7 +48,7 @@ class GroupAssignmentsReport(object):
                 self.logger.debug('Card id is: %s' % (_g_assignment.id));
                 self.group_assignments.append(group_assignment.GroupAssignment(_g_assignment.id, self.trello));
                 self.group_assignments[-1].get_name();
-                self.group_assignments[-1].get_tags();
+                self.group_assignments[-1].get_tags(self.special_tags);
                 self.group_assignments[-1].get_status();
                 self.group_assignments[-1].get_members();
                 self.group_assignments[-1].get_detailed_status();

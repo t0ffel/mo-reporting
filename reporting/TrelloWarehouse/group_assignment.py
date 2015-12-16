@@ -49,36 +49,24 @@ class GroupAssignment(object):
     def get_name(self):
         self.content['name'] = self._card.name.decode(encoding='UTF-8')
 
-    def get_tags(self):
+    def get_tags(self, special_tags):
         self.content['tags'] = [];
-        self.content['funding_buckets'] = [];
-        self.content['team'] = [];
-        self.content['type'] = [];
-        self.content['project'] = [];
+
+        for tag_type in special_tags.keys():
+            self.content[tag_type] = []
 
         # obtain all tags
         _all_tags = re.findall('\[.*?\]',(str(self._card.name)))
         _all_tags.extend(re.findall('\[.*?\]', str(self._card.desc)))
         self.logger.debug('all tags: %s' % _all_tags)
 
-        # filter out special tag types
+        # filter out special tag types, see report.yml for tag types.
         for tag in _all_tags:
-            if tag[0:4] == '[fb_':
-                self.content['funding_buckets'].append(tag[4:-1])
-                self.logger.debug('Found fb tag: %s' % (self.content['funding_buckets'][-1]))
-                continue;
-            elif tag[0:6] == '[team_':
-                self.content['team'].append(tag[6:-1])
-                self.logger.debug('Found team tag: %s' % (self.content['team'][-1]))
-                continue;
-            elif tag[0:6] == '[type_':
-                self.content['type'].append(tag[6:-1])
-                self.logger.debug('Found type tag: %s' % (self.content['type'][-1]))
-                continue;
-            elif tag[0:9] == '[project_':
-                self.content['project'] = tag[9:-1]
-                self.logger.debug('Found project tag: %s' % (self.content['project']))
-                continue;
+            for tag_type in special_tags.keys():
+                cur_tag = special_tags[tag_type]; # tag type being currently reviewed
+                if tag[1:len(cur_tag[':tag_prefix'])+1] == cur_tag[':tag_prefix']:
+                    self.content[tag_type].append(tag[len(cur_tag[':tag_prefix'])+1:-1])
+                    break
             self.content['tags'].append(tag);
 
     def get_status(self):

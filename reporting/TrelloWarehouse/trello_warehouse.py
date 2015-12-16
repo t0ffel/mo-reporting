@@ -16,7 +16,7 @@ class TrelloWarehouse(object):
     Class representing all Trello information required to do the SysDesEng reporting.
     """
 
-    def __init__(self, trello_sources):
+    def __init__(self, trello_sources, config_tags):
         self.logger = logging.getLogger("sysengreporting")
         self.client = TrelloClient(api_key = os.environ['TRELLO_API_KEY'],
                                    api_secret = os.environ['TRELLO_API_SECRET'],
@@ -30,6 +30,9 @@ class TrelloWarehouse(object):
                 self.logger.debug("Adding board %s, list %s to the report" % (trello_sources[board_t][':board_id'], trello_sources[board_t][':lists'][list_t]))
                 self.report_src.append( (trello_sources[board_t][':board_id'], trello_sources[board_t][':lists'][list_t]) )
 
+        # Dict describing special tags
+        self.special_tags = config_tags;
+
         # Google access info
         # TODO: to move out
         self.gSCOPES = "https://www.googleapis.com/auth/drive " + "https://spreadsheets.google.com/feeds/"
@@ -38,7 +41,7 @@ class TrelloWarehouse(object):
 
 
     def get_granular_report(self):
-        self.group_report = report_group_assignments.GroupAssignmentsReport("syseng report", self.client, self.report_src);
+        self.group_report = report_group_assignments.GroupAssignmentsReport("syseng report", self.client, self.report_src, self.special_tags);
         if not self.group_report.repopulate_report():
             self.logger.error('Failed to populate report from Trello');
             return False;

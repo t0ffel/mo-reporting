@@ -25,7 +25,7 @@ def main():
     with open("config/report.yml", 'r') as stream:
         report_config = yaml.load(stream)
 
-    warehouse = trello_warehouse.TrelloWarehouse(report_config[':trello_sources'])
+    warehouse = trello_warehouse.TrelloWarehouse(report_config[':trello_sources'], report_config[':tags'])
     logger.info('Welcome to the Warehouse!')
 
 
