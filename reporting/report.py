@@ -25,14 +25,17 @@ def main():
     with open("config/report.yml", 'r') as stream:
         report_config = yaml.load(stream)
 
-    warehouse = trello_warehouse.TrelloWarehouse(report_config[':trello_sources'], report_config[':tags'])
+    with open("config/trello_secret.yml", 'r') as stream:
+        trello_secret_config = yaml.load(stream)
+
+    warehouse = trello_warehouse.TrelloWarehouse(report_config[':trello_sources'], report_config[':tags'], trello_secret_config)
     logger.info('Welcome to the Warehouse!')
 
 
     
     if not warehouse.get_granular_report():
         return False
-    warehouse.write_gspreadsheet()
+    warehouse.write_gspreadsheet(report_config[':columns'])
 
 if __name__ == '__main__':
 

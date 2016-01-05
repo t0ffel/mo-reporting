@@ -17,14 +17,14 @@ class GWriter(object):
     Class representing writing reporting data to google sheets via gspread.
     """
 
-    def __init__(self, report_name):
+    def __init__(self, report_name, columns):
         self.logger = logging.getLogger("sysengreporting")
-        #syseng_board_id = '55b8e03be0b7b68131139cf1'; #Real syseng board
-        #inprogress_list_id = '55b8e064fb3f1d621db0746f'; #real syseng in progress list
 
         self.gSCOPES = "https://www.googleapis.com/auth/drive " + "https://spreadsheets.google.com/feeds/"
-        self. gCLIENT_SECRET_FILE = 'client_secret.json'
+        self.gCLIENT_SECRET_FILE = os.path.join(os.path.dirname(__file__), '..', '..', 'config', 'client_secret.json')
         self.gAPPLICATION_NAME = 'gDrive Trello Warehouse'
+
+        self.columns = columns
 
         self.credentials = self.g_authenticate();
         self.gc = gspread.authorize(self.credentials)
@@ -39,40 +39,46 @@ class GWriter(object):
         self.report = self.gc.open(report_name)
         self.wks_granular = self.report.sheet1
 
-        self.wks_project = self.report.add_worksheet(title="Projects", rows="100", cols="20")
-#        self.wks_project = self.gc.open(report_name).sheet2
-        # Need to create the spreadsheet first!
-
-        # Need to open the spread sheet and select worksheet
-
-
-    def write_data(self, lines, sheet):
+    def write_batch_data(self, lines, sheet):
         """
         Iterate through all the rows/columns and write the actual data
         """
-        sheet.insert_row([ "Assignment ID", "Assignment" , "Owner" , "Project", "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags", "Short URL", "Board", "List", "Team", "Type", "Last Moved", "Due Date"])
-        i = 2; # row index
-        for line in lines:
-            self.logger.debug('Adding project %s, owned by %s' % (line.content['name'], line.content['members']))
-            j = 0
-            while j < 10:
-                j += 1;
-                try:
-                    sheet.insert_row([line.content['id'], line.content['name'], line.content['members'], line.content['project'], line.content['funding_buckets'], line.content['status'], line.content['last_updated'], line.content['detailed_status'], line.content['tags'], line.content['short_url'], line.content['board_name'], line.content['list_name'], line.content['team'], line.content['type'] ,line.content['latest_move'], line.content['due_date'] ], i);
-                except Exception as e:
-                    self.logger.error('google unavailable! retrying! %s' % (e))
-                    if j == 10:
-                        raise Exception;
-                    continue
-                break
-            i += 1;
+        range_name = 'A2:' + chr(ord('A') + len(self.columns) - 1) + str(len(lines) + 1) # TODO: only 26 columns so far
+        self.logger.debug('The worksheet range is %s' % (range_name));
+        cell_range = sheet.range(range_name);
+        # rows - number of lines to write
 
-    def write_metadata(self):
+        self.logger.debug('Columns from the config are: %s' % (self.columns))
+        # cols - number of columns to write
+        cell_index = 0;
+        for line in lines:
+            self.logger.debug('Working on line %s' % (line.content))
+            for c in range(len(self.columns)):
+                cell_range[cell_index].value = line.content[self.columns[c + 1][':key']];
+                cell_index += 1;
+        try:
+            sheet.update_cells(cell_range);
+        except IndexError as e:
+            self.logger.error('IndexError occurred. %s' % (e))
+        return True
+
+    def write_headers(self, sheet):
         """
         Write name/date of the report.. to 2nd worksheet?
         write 1st row here as well.
         """
-        self.wks.insert_row([ "Project ID", "Project" , "Owner" , "Funding Buckets", "Status" , "Last Updated", "Detailed Status", "Tags", "Short URL", "Board", "List"])
+        range_name = 'A1:' + chr(ord('A') + len(self.columns) - 1) + '1'  # TODO: only 26 columns so far
+        self.logger.debug('The header range is %s' % (range_name));
+        cell_range = sheet.range(range_name);
+
+        self.logger.debug('Columns from the config are: %s' % (self.columns))
+        for c in range(len(self.columns)):
+            cell_range[c].value = self.columns[c + 1][':name'];
+        try:
+            sheet.update_cells(cell_range);
+        except IndexError as e:
+            self.logger.error('IndexError occurred. %s' % (e))
+        return True;
 
     def csv_write(self, _dir_path):
         csv_file = open(os.path.join(_dir_path, self.gran_report.full_name + '.csv'),'w+');

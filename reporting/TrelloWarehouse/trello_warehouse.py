@@ -16,12 +16,12 @@ class TrelloWarehouse(object):
     Class representing all Trello information required to do the SysDesEng reporting.
     """
 
-    def __init__(self, trello_sources, config_tags):
+    def __init__(self, trello_sources, config_tags, trello_secret):
         self.logger = logging.getLogger("sysengreporting")
-        self.client = TrelloClient(api_key = os.environ['TRELLO_API_KEY'],
-                                   api_secret = os.environ['TRELLO_API_SECRET'],
-                                   token = os.environ['TRELLO_TOKEN'],
-                                   token_secret = os.environ['TRELLO_TOKEN_SECRET'])
+        self.client = TrelloClient(api_key = trello_secret[':consumer_key'],
+                                   api_secret = trello_secret[':consumer_secret'],
+                                   token = trello_secret[':oauth_token'],
+                                   token_secret = trello_secret[':oauth_token_secret'])
 
         # Populate the list of (board, lists) tuples on which to report
         self.report_src = []
@@ -32,13 +32,6 @@ class TrelloWarehouse(object):
 
         # Dict describing special tags
         self.special_tags = config_tags;
-
-        # Google access info
-        # TODO: to move out
-        self.gSCOPES = "https://www.googleapis.com/auth/drive " + "https://spreadsheets.google.com/feeds/"
-        self.gCLIENT_SECRET_FILE = 'client_secret.json'
-        self.gAPPLICATION_NAME = 'gDrive Trello Warehouse'
-
 
     def get_granular_report(self):
         self.group_report = report_group_assignments.GroupAssignmentsReport("syseng report", self.client, self.report_src, self.special_tags);
@@ -66,10 +59,10 @@ class TrelloWarehouse(object):
         csv_file.close();
 
 
-    def write_gspreadsheet(self):
-        writer = gwriter.GWriter(self.assignments_report.full_name)
-        writer.write_data(self.assignments_report.assignments, writer.wks_granular)
-        #writer.write_data(self.raw_report.projects, writer.wks_project)
+    def write_gspreadsheet(self, columns):
+        writer = gwriter.GWriter(self.assignments_report.full_name, columns)
+        writer.write_headers(writer.wks_granular);
+        writer.write_batch_data(self.assignments_report.assignments, writer.wks_granular)
 
     def list_boards(self):
         syseng_boards = self.client.list_boards()

@@ -35,28 +35,43 @@
     :key: "name"
   3:
     :name: "Owner"
-    :key: "member"
-  project:
+    :key: "members"
+  4:
     :name: "Project"
-    :line_key: "project"
-  funding_buckets:
+    :key: "project"
+  5:
     :name: "Funding Buckets"
-    :line_key: "funding_buckets"
-  status:
+    :key: "funding_buckets"
+  6:
     :name: "Status"
-    :line_key: "status"
-  last_updated:
+    :key: "status"
+  7:
     :name: "Last Updated"
-    :line_key: "last_updated"
-  detailed_status:
+    :key: "last_updated"
+  8:
     :name: "Detailed Status"
-    :line_key: "detailed_status"
-  tags:
-  short_url:
-  board_name:
-  list_name:
-  team:
-  type:
-  last_moved:
-  due_date:
-
+    :key: "detailed_status"
+  9:
+    :name: "Tags"
+    :key: "tags"
+  10:
+    :name: "Short URL"
+    :key: "short_url"
+  11:
+    :name: "Board"
+    :key: "board_name"
+  12:
+    :name: "List"
+    :key: "list_name"
+  13:
+    :name: "Team"
+    :key: "team"
+  14:
+    :name: "Type"
+    :key: "type"
+  15:
+    :name: "Last Moved"
+    :key: "latest_move"
+  16:
+    :name: "Due Date"
+    :key: "due_date"

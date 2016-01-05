@@ -18,7 +18,6 @@ class GroupAssignment(object):
             'name' : '',
             'id'   : _id,
             'members': [],
-            'readable_members': "",
             'funding_buckets': "",
             'status': "",
             'label': "",
@@ -98,7 +97,6 @@ class GroupAssignment(object):
                     continue
                 break
             self.logger.debug('Adding members %s to the card %s' % (self.content['members'][-1].full_name, self.content['name']));
-            self.content['readable_members'] += self.content['members'][-1].full_name + "\n"
 
     def get_detailed_status(self):
         while True:
