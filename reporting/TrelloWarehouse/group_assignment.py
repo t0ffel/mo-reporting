@@ -64,9 +64,11 @@ class GroupAssignment(object):
             for tag_type in special_tags.keys():
                 cur_tag = special_tags[tag_type]; # tag type being currently reviewed
                 if tag[1:len(cur_tag[':tag_prefix'])+1] == cur_tag[':tag_prefix']:
-                    self.content[tag_type].append(tag[len(cur_tag[':tag_prefix'])+1:-1])
                     break
-            self.content['tags'].append(tag);
+            if tag[1:len(cur_tag[':tag_prefix'])+1] == cur_tag[':tag_prefix']:
+                    self.content[tag_type].append(tag[len(cur_tag[':tag_prefix'])+1:-1]) #Special tag gets appended to the respective list
+            else:
+                self.content['tags'].append(tag); #Other tags go to general tags list
 
     def get_status(self):
         for label in self._card.labels:
