@@ -17,14 +17,15 @@ class GWriter(object):
     Class representing writing reporting data to google sheets via gspread.
     """
 
-    def __init__(self, report_name, columns):
+    def __init__(self, report_name, report_parameters):
         self.logger = logging.getLogger("sysengreporting")
 
         self.gSCOPES = "https://www.googleapis.com/auth/drive " + "https://spreadsheets.google.com/feeds/"
         self.gCLIENT_SECRET_FILE = os.path.join(os.path.dirname(__file__), '..', '..', 'config', 'client_secret.json')
         self.gAPPLICATION_NAME = 'gDrive Trello Warehouse'
 
-        self.columns = columns
+        self.columns = report_parameters[':columns'];
+        self.template_id = report_parameters[':template_id'];
 
         self.credentials = self.g_authenticate();
         self.gc = gspread.authorize(self.credentials)
@@ -32,10 +33,9 @@ class GWriter(object):
         http = self.credentials.authorize(httplib2.Http())
         self.service = discovery.build('drive', 'v2', http=http)
 
-        #self.list_files();
-
-        #self.tmp = self.gc.open_by_key('1U9n7Onrx48azTxInuWOQN5fBHXuFGxYToOlPpRiHo5o')
-        self._create_new(report_name)
+        if not (self.copy_file(self.service, self.template_id, report_name)):
+            self.logger.debug('Unable to copy the template %s successfully!' % (self.report))
+        self.logger.debug('Copied the template %s successfully!' % (self.template_id))
         self.report = self.gc.open(report_name)
         self.wks_granular = self.report.sheet1
 
@@ -184,4 +184,23 @@ class GWriter(object):
                 new_document.get('id'))
 
         return new_document
+
+
+    def copy_file(self, service, origin_file_id, copy_title):
+        """Copy an existing file.
+        Args:
+          service: Drive API service instance.
+          origin_file_id: ID of the origin file to copy.
+          copy_title: Title of the copy.
+
+        Returns:
+          The copied file if successful, None otherwise.
+        """
+        copied_file = {'title': copy_title}
+        try:
+            return service.files().copy(
+                fileId=origin_file_id, body=copied_file).execute()
+        except errors.HttpError as error:
+            self.logger.exception('An error occurred: %s' % (error))
+        return None
 

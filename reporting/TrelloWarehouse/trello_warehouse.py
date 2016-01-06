@@ -16,12 +16,17 @@ class TrelloWarehouse(object):
     Class representing all Trello information required to do the SysDesEng reporting.
     """
 
-    def __init__(self, trello_sources, config_tags, trello_secret):
+    def __init__(self, report_config, trello_secret):
         self.logger = logging.getLogger("sysengreporting")
         self.client = TrelloClient(api_key = trello_secret[':consumer_key'],
                                    api_secret = trello_secret[':consumer_secret'],
                                    token = trello_secret[':oauth_token'],
                                    token_secret = trello_secret[':oauth_token_secret'])
+
+        #Extract report configuration parameters
+        trello_sources = report_config[':trello_sources'];
+        self.special_tags = report_config[':tags'];
+        self.report_parameters = report_config[':report'];
 
         # Populate the list of (board, lists) tuples on which to report
         self.report_src = []
@@ -30,8 +35,6 @@ class TrelloWarehouse(object):
                 self.logger.debug("Adding board %s, list %s to the report" % (trello_sources[board_t][':board_id'], trello_sources[board_t][':lists'][list_t]))
                 self.report_src.append( (trello_sources[board_t][':board_id'], trello_sources[board_t][':lists'][list_t]) )
 
-        # Dict describing special tags
-        self.special_tags = config_tags;
 
     def get_granular_report(self):
         self.group_report = report_group_assignments.GroupAssignmentsReport("syseng report", self.client, self.report_src, self.special_tags);
@@ -59,8 +62,8 @@ class TrelloWarehouse(object):
         csv_file.close();
 
 
-    def write_gspreadsheet(self, columns):
-        writer = gwriter.GWriter(self.assignments_report.full_name, columns)
+    def write_gspreadsheet(self):
+        writer = gwriter.GWriter(self.assignments_report.full_name, self.report_parameters)
         writer.write_headers(writer.wks_granular);
         writer.write_batch_data(self.assignments_report.assignments, writer.wks_granular)
 

@@ -26,52 +26,54 @@
   type:
     :tag_prefix: "type_"
     :pretty_name: "Type"
-:columns:
-  1:
-    :name: "Assignment ID"
-    :key: "id"
-  2:
-    :name: "Assignment"
-    :key: "name"
-  3:
-    :name: "Owner"
-    :key: "members"
-  4:
-    :name: "Project"
-    :key: "project"
-  5:
-    :name: "Funding Buckets"
-    :key: "funding_buckets"
-  6:
-    :name: "Status"
-    :key: "status"
-  7:
-    :name: "Last Updated"
-    :key: "last_updated"
-  8:
-    :name: "Detailed Status"
-    :key: "detailed_status"
-  9:
-    :name: "Tags"
-    :key: "tags"
-  10:
-    :name: "Short URL"
-    :key: "short_url"
-  11:
-    :name: "Board"
-    :key: "board_name"
-  12:
-    :name: "List"
-    :key: "list_name"
-  13:
-    :name: "Team"
-    :key: "team"
-  14:
-    :name: "Type"
-    :key: "type"
-  15:
-    :name: "Last Moved"
-    :key: "latest_move"
-  16:
-    :name: "Due Date"
-    :key: "due_date"
+:report:
+  :template_id: "16uTnAlmxKkuhl_1Z3Nq2yS4XDdtZSvW5WGRMep41FWI" #Google spreadsheet template to use for the report
+  :columns:
+    1:
+      :name: "Assignment ID"
+      :key: "id"
+    2:
+      :name: "Assignment"
+      :key: "name"
+    3:
+      :name: "Owner"
+      :key: "members"
+    4:
+      :name: "Project"
+      :key: "project"
+    5:
+      :name: "Funding Buckets"
+      :key: "funding_buckets"
+    6:
+      :name: "Status"
+      :key: "status"
+    7:
+      :name: "Last Updated"
+      :key: "last_updated"
+    8:
+      :name: "Detailed Status"
+      :key: "detailed_status"
+    9:
+      :name: "Tags"
+      :key: "tags"
+    10:
+      :name: "Short URL"
+      :key: "short_url"
+    11:
+      :name: "Board"
+      :key: "board_name"
+    12:
+      :name: "List"
+      :key: "list_name"
+    13:
+      :name: "Team"
+      :key: "team"
+    14:
+      :name: "Type"
+      :key: "type"
+    15:
+      :name: "Last Moved"
+      :key: "latest_move"
+    16:
+      :name: "Due Date"
+      :key: "due_date"
