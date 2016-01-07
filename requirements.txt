@@ -1,4 +1,4 @@
 py-trello
 google-api-python-client
 gspread
-yaml
+pyyaml
